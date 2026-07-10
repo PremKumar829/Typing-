@@ -9,27 +9,27 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "./1000121156_3_cropped.jpg",
+      "src": "https://files.catbox.moe/g89be4.png",
       "sizes": "192x192",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./1000121156_cropped.jpg",
+      "src": "https://files.catbox.moe/690fd8.png",
       "sizes": "512x512",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./1000121156_3_cropped.jpg",
+      "src": "https://files.catbox.moe/g89be4.png",
       "sizes": "192x192",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "./1000121156_cropped.jpg",
+      "src": "https://files.catbox.moe/690fd8.png",
       "sizes": "512x512",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "maskable"
     }
   ]
