@@ -144,7 +144,7 @@
             .brand p { display: none; }
             .nav-menu { display: flex; padding: 0; }
             .nav-item { padding: 15px; border: none; border-bottom: 3px solid transparent; }
-            .nav-item span { display: none; } /* Hide text, show icons on mobile */
+            .nav-item span { display: none; }
             .nav-item.active { border-left: none; border-bottom-color: var(--primary); }
             .main-content { padding: 20px; }
             .app-container { padding: 20px; }
@@ -266,10 +266,10 @@
         ];
 
         let studentName = "Guest User";
-        let activeModule = ""; // 'test' or 'practice'
+        let activeModule = ""; 
         
         // State Variables
-        let timerLimit = 60; // default for test
+        let timerLimit = 60; 
         let timeLeft = 60;
         let timeElapsed = 0;
         let timerInterval = null;
@@ -279,15 +279,12 @@
         
         // ------------------ Navigation ------------------
         function navigate(screenId) {
-            // Update Sidebar UI
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             event.currentTarget.classList?.add('active');
 
-            // Update Screens
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(`screen-${screenId}`).classList.add('active');
 
-            // Stop any running timers when switching screens
             clearInterval(timerInterval);
             
             if (screenId === 'test' || screenId === 'practice') {
@@ -299,7 +296,6 @@
             const inputName = document.getElementById('student-name').value.trim();
             if(inputName !== "") studentName = inputName;
             
-            // manually highlight sidebar
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             document.querySelectorAll('.nav-item')[1].classList.add('active');
             
@@ -337,7 +333,6 @@
 
             loadNewText(prefix);
             
-            // Attach event listener to the correct input box (remove old ones first to prevent duplicates)
             const inputBox = document.getElementById(`${prefix}-input`);
             const newBox = inputBox.cloneNode(true);
             inputBox.parentNode.replaceChild(newBox, inputBox);
@@ -375,7 +370,7 @@
                 span.classList.remove('active-char', 'correct', 'incorrect');
 
                 if (char == null) {
-                    // Not typed yet
+                    
                 } else if (char === span.innerText) {
                     span.classList.add('correct');
                 } else {
@@ -388,11 +383,9 @@
                 arrayDisplay[arrayValue.length].classList.add('active-char');
             }
 
-            // Real-time Accuracy
             let acc = totalTyped === 0 ? 100 : Math.round(((totalTyped - mistakes) / totalTyped) * 100);
             document.getElementById(`${prefix}-accuracy`).innerText = acc + "%";
 
-            // Next paragraph if finished
             if (arrayValue.length === arrayDisplay.length) {
                 inputBox.value = "";
                 loadNewText(prefix);
@@ -406,16 +399,13 @@
                 timeLeft--;
                 document.getElementById(`${prefix}-timer`).innerText = timeLeft + "s";
             } else {
-                // Practice Mode counts UP
                 document.getElementById(`${prefix}-timer`).innerText = timeElapsed + "s";
             }
             
-            // WPM calculation: (Characters / 5) / Minutes
             let wpm = Math.round((((totalTyped - mistakes) / 5) / (timeElapsed / 60)));
             if (wpm < 0 || !wpm || wpm === Infinity) wpm = 0;
             document.getElementById(`${prefix}-wpm`).innerText = wpm;
 
-            // End test if timer hits 0
             if (prefix === 'test' && timeLeft <= 0) {
                 endTest(wpm, document.getElementById(`${prefix}-accuracy`).innerText);
             }
@@ -426,16 +416,14 @@
             clearInterval(timerInterval);
             document.getElementById('test-input').disabled = true;
 
-            // Generate Certificate
             document.getElementById('cert-name-display').innerText = studentName;
             document.getElementById('cert-wpm').innerText = finalWpm + " WPM";
             document.getElementById('cert-acc').innerText = finalAcc;
             document.getElementById('cert-mode').innerText = timerLimit + "s Test";
             document.getElementById('cert-date').innerText = new Date().toLocaleDateString();
 
-            // Auto navigate to certificate
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            document.querySelectorAll('.nav-item')[3].classList.add('active'); // highlight cert tab
+            document.querySelectorAll('.nav-item')[3].classList.add('active');
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('screen-certificate').classList.add('active');
         }
@@ -460,6 +448,16 @@
                 alert("Error downloading certificate.");
                 btn.innerText = originalText;
                 btn.disabled = false;
+            });
+        }
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker Registered Successfully!', reg))
+                    .catch(err => console.error('Service Worker Registration Failed:', err));
             });
         }
     </script>
