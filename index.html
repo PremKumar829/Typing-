@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prime Typing Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap');
+
+        body {
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #prime-typing-app {
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+            max-width: 850px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            color: #334155;
+        }
+        
+        /* Header */
+        .app-header {
+            background: #1e293b;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+            border-bottom: 4px solid #3b82f6;
+        }
+        .app-header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .app-header p {
+            margin: 5px 0 0 0;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        /* Screens */
+        .screen { padding: 40px; display: none; }
+        .screen.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Intro Screen */
+        .intro-container { text-align: center; max-width: 400px; margin: 0 auto; }
+        .intro-container h2 { font-size: 22px; margin-bottom: 20px; }
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .input-field:focus { border-color: #3b82f6; }
+        
+        .primary-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        .primary-btn:hover { background: #2563eb; }
+        .secondary-btn {
+            background: #1e293b;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            transition: background 0.3s;
+        }
+        .secondary-btn:hover { background: #0f172a; }
+        .error-msg { color: #ef4444; font-size: 14px; display: none; margin-bottom: 15px; }
+
+        /* Test Screen */
+        .stats-container { display: flex; justify-content: space-around; margin-bottom: 30px; background: #f8fafc; padding: 20px; border-radius: 12px; }
+        .stat-box { text-align: center; }
+        .stat-box span { display: block; font-size: 13px; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+        .stat-box strong { font-size: 32px; color: #0f172a; }
+        
+        #text-display {
+            font-size: 20px;
+            line-height: 1.7;
+            color: #94a3b8;
+            margin-bottom: 30px;
+            user-select: none;
+            min-height: 120px;
+        }
+        .correct { color: #10b981; }
+        .incorrect { color: #ef4444; background-color: #fee2e2; border-radius: 3px; }
+        .active-char { border-bottom: 3px solid #3b82f6; color: #1e293b; }
+        
+        #text-input {
+            width: 100%; height: 120px; padding: 20px; font-size: 18px; border: 2px solid #cbd5e1;
+            border-radius: 12px; resize: none; outline: none; box-sizing: border-box; font-family: 'Inter', sans-serif;
+        }
+        #text-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+
+        /* Certificate Screen */
+        .certificate-wrapper {
+            border: 8px solid #cbd5e1;
+            padding: 10px;
+            background: #fff;
+            position: relative;
+        }
+        .certificate-inner {
+            border: 2px solid #e2e8f0;
+            padding: 40px;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        }
+        .cert-brand { font-size: 16px; font-weight: 700; color: #3b82f6; text-transform: uppercase; letter-spacing: 2px; }
+        .cert-title { font-family: 'Playfair Display', serif; font-size: 42px; color: #1e293b; margin: 20px 0; font-weight: 600; }
+        .cert-text { font-size: 16px; color: #64748b; margin-bottom: 10px; }
+        .cert-name { font-family: 'Playfair Display', serif; font-size: 36px; color: #0f172a; border-bottom: 2px solid #cbd5e1; display: inline-block; padding: 0 40px 10px; margin-bottom: 30px; }
+        
+        .cert-stats { display: flex; justify-content: center; gap: 40px; margin-bottom: 40px; }
+        .cert-stat { background: #1e293b; color: white; padding: 15px 30px; border-radius: 8px; }
+        .cert-stat span { font-size: 12px; text-transform: uppercase; opacity: 0.8; display: block; }
+        .cert-stat strong { font-size: 28px; }
+
+        .cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 50px; text-align: left; }
+        .signature-line { border-top: 1px solid #1e293b; padding-top: 10px; width: 200px; text-align: center; }
+        .signature-name { font-weight: 700; font-size: 18px; color: #1e293b; }
+        .signature-title { font-size: 14px; color: #64748b; }
+        
+        .action-buttons { 
+            margin-top: 30px; 
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        .action-buttons button {
+            max-width: 250px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="prime-typing-app">
+    <div class="app-header">
+        <h1>PRIME TYPING</h1>
+        <p>Professional Speed & Accuracy Evaluation</p>
+    </div>
+
+    <div id="screen-intro" class="screen active">
+        <div class="intro-container">
+            <h2>Student Registration</h2>
+            <p style="color: #64748b; margin-bottom: 25px;">Please enter your full name as you would like it to appear on your certificate.</p>
+            <p id="error-msg" class="error-msg">Please enter your name to continue.</p>
+            <input type="text" id="student-name" class="input-field" placeholder="E.g., John Doe" autocomplete="off">
+            <button class="primary-btn" onclick="startApp()">Begin 60-Second Test</button>
+        </div>
+    </div>
+
+    <div id="screen-test" class="screen">
+        <div class="stats-container">
+            <div class="stat-box">
+                <span>Time Left</span>
+                <strong id="timer">60s</strong>
+            </div>
+            <div class="stat-box">
+                <span>Live WPM</span>
+                <strong id="wpm">0</strong>
+            </div>
+            <div class="stat-box">
+                <span>Accuracy</span>
+                <strong id="accuracy">100%</strong>
+            </div>
+        </div>
+
+        <div id="text-display"></div>
+        <textarea id="text-input" placeholder="Start typing here to begin the timer..." autocomplete="off"></textarea>
+    </div>
+
+    <div id="screen-certificate" class="screen">
+        <div id="certificate-capture-area" class="certificate-wrapper">
+            <div class="certificate-inner">
+                <div class="cert-brand">Prime Typing</div>
+                <div class="cert-title">Certificate of Achievement</div>
+                <div class="cert-text">This is proudly presented to</div>
+                <div class="cert-name" id="cert-student-name">Student Name</div>
+                <div class="cert-text">for successfully completing the typing evaluation with the following results:</div>
+                
+                <div class="cert-stats">
+                    <div class="cert-stat">
+                        <span>Speed</span>
+                        <strong id="cert-wpm">0 WPM</strong>
+                    </div>
+                    <div class="cert-stat">
+                        <span>Accuracy</span>
+                        <strong id="cert-acc">0%</strong>
+                    </div>
+                </div>
+
+                <div class="cert-footer">
+                    <div>
+                        <div class="signature-line">
+                            <span style="font-family: 'Playfair Display', serif; font-size: 24px; font-style: italic;">Prem Gupta</span>
+                        </div>
+                        <div class="signature-name" style="text-align: center;">PREM GUPTA</div>
+                        <div class="signature-title" style="text-align: center;">Director, Prime Typing</div>
+                    </div>
+                    <div style="text-align: right; color: #64748b; font-size: 14px;">
+                        Date: <span id="cert-date"></span><br>
+                        Verify: prime-typing-eval
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="primary-btn" onclick="downloadCertificate()">Download Certificate</button>
+            <button class="secondary-btn" onclick="resetToHome()">Retake Test</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const quotes = [
+        "The rapid advancement of artificial intelligence and machine learning is reshaping the global economy. Professionals must adapt to these new technologies to stay relevant in the modern workplace.",
+        "Effective communication is the cornerstone of successful project management. Clear instructions and active listening can drastically reduce errors and improve overall team productivity.",
+        "In the world of software development, writing clean and maintainable code is just as important as writing code that functions. Future developers will thank you for your clarity.",
+        "Entrepreneurship requires a unique blend of vision, resilience, and adaptability. The journey is rarely a straight line, and failure is often the best teacher along the way.",
+        "Cybersecurity is no longer an optional luxury for businesses; it is a fundamental requirement. Protecting sensitive data from malicious actors requires constant vigilance and updated protocols."
+    ];
+
+    let studentName = "";
+    let timeLeft = 60;
+    let timeElapsed = 0;
+    let timer = null;
+    let isTyping = false;
+    let mistakes = 0;
+    let totalTyped = 0;
+    let finalWpm = 0;
+    let finalAcc = 100;
+
+    const screens = {
+        intro: document.getElementById('screen-intro'),
+        test: document.getElementById('screen-test'),
+        certificate: document.getElementById('screen-certificate')
+    };
+
+    const elements = {
+        nameInput: document.getElementById('student-name'),
+        errorMsg: document.getElementById('error-msg'),
+        textDisplay: document.getElementById('text-display'),
+        textInput: document.getElementById('text-input'),
+        timer: document.getElementById('timer'),
+        wpm: document.getElementById('wpm'),
+        accuracy: document.getElementById('accuracy')
+    };
+
+    function switchScreen(screenName) {
+        Object.values(screens).forEach(s => s.classList.remove('active'));
+        screens[screenName].classList.add('active');
+    }
+
+    function startApp() {
+        const name = elements.nameInput.value.trim();
+        if (name === "") {
+            elements.errorMsg.style.display = "block";
+            return;
+        }
+        elements.errorMsg.style.display = "none";
+        studentName = name;
+        
+        initTest();
+        switchScreen('test');
+    }
+
+    function getRandomQuote() {
+        return quotes[Math.floor(Math.random() * quotes.length)];
+    }
+
+    function initTest() {
+        clearInterval(timer);
+        timeLeft = 60;
+        timeElapsed = 0;
+        isTyping = false;
+        mistakes = 0;
+        totalTyped = 0;
+        finalWpm = 0;
+        finalAcc = 100;
+        
+        elements.textInput.value = "";
+        elements.textInput.disabled = false;
+        elements.timer.innerText = "60s";
+        elements.wpm.innerText = "0";
+        elements.accuracy.innerText = "100%";
+        
+        loadNewQuote();
+    }
+
+    function loadNewQuote() {
+        const currentText = getRandomQuote();
+        elements.textDisplay.innerHTML = "";
+        
+        currentText.split('').forEach(char => {
+            const charSpan = document.createElement('span');
+            charSpan.innerText = char;
+            elements.textDisplay.appendChild(charSpan);
+        });
+        elements.textDisplay.querySelectorAll('span')[0].classList.add('active-char');
+    }
+
+    elements.textInput.addEventListener('input', () => {
+        if (!isTyping) {
+            timer = setInterval(updateTimer, 1000);
+            isTyping = true;
+        }
+
+        const arrayQuote = elements.textDisplay.querySelectorAll('span');
+        const arrayValue = elements.textInput.value.split('');
+        
+        mistakes = 0;
+        totalTyped = arrayValue.length;
+
+        arrayQuote.forEach((charSpan, index) => {
+            const character = arrayValue[index];
+            charSpan.classList.remove('active-char');
+
+            if (character == null) {
+                charSpan.classList.remove('correct');
+                charSpan.classList.remove('incorrect');
+            } else if (character === charSpan.innerText) {
+                charSpan.classList.add('correct');
+                charSpan.classList.remove('incorrect');
+            } else {
+                charSpan.classList.remove('correct');
+                charSpan.classList.add('incorrect');
+                mistakes++;
+            }
+        });
+
+        if (arrayValue.length < arrayQuote.length) {
+            arrayQuote[arrayValue.length].classList.add('active-char');
+        }
+
+        finalAcc = totalTyped === 0 ? 100 : Math.round(((totalTyped - mistakes) / totalTyped) * 100);
+        elements.accuracy.innerText = finalAcc + "%";
+
+        if (arrayValue.length === arrayQuote.length) {
+            elements.textInput.value = "";
+            loadNewQuote();
+        }
+    });
+
+    function updateTimer() {
+        if (timeLeft > 0) {
+            timeLeft--;
+            timeElapsed++;
+            elements.timer.innerText = timeLeft + "s";
+            
+            finalWpm = Math.round((((totalTyped - mistakes) / 5) / (timeElapsed / 60)));
+            if (finalWpm < 0 || !finalWpm || finalWpm === Infinity) finalWpm = 0;
+            elements.wpm.innerText = finalWpm;
+        } else {
+            endTest();
+        }
+    }
+
+    function endTest() {
+        clearInterval(timer);
+        elements.textInput.disabled = true;
+        
+        // Populate Certificate
+        document.getElementById('cert-student-name').innerText = studentName;
+        document.getElementById('cert-wpm').innerText = finalWpm + " WPM";
+        document.getElementById('cert-acc').innerText = finalAcc + "%";
+        
+        const today = new Date();
+        document.getElementById('cert-date').innerText = today.toLocaleDateString();
+
+        switchScreen('certificate');
+    }
+
+    function resetToHome() {
+        elements.nameInput.value = "";
+        switchScreen('intro');
+    }
+
+    // Function to download the certificate as an image
+    function downloadCertificate() {
+        const certElement = document.getElementById('certificate-capture-area');
+        
+        // Change button text to show progress
+        const btn = event.target;
+        const originalText = btn.innerText;
+        btn.innerText = "Generating...";
+        btn.disabled = true;
+
+        html2canvas(certElement, {
+            scale: 2, // Increases quality/resolution of the downloaded image
+            backgroundColor: null
+        }).then(canvas => {
+            // Create a temporary link to download the image
+            const link = document.createElement('a');
+            link.download = `Prime_Typing_Certificate_${studentName.replace(/\s+/g, '_')}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            
+            // Reset button
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }).catch(err => {
+            console.error("Error generating certificate image:", err);
+            btn.innerText = "Error - Try Again";
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }, 3000);
+        });
+    }
+</script>
+
+</body>
+</html>
